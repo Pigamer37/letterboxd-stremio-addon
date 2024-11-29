@@ -1,0 +1,33 @@
+{
+  "name": "letterboxd-stremio-addon",
+  "version": "0.0.1",
+  "description": "Node.js addon trying to sync watched movies on Stremio with Letterboxd activity. (I'm new to backend so I'm using it as a learning experience)",
+  "main": "index.js",
+  "scripts": {
+    "devStart": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pigamer37/letterboxd-stremio-addon.git"
+  },
+  "keywords": [
+    "stremio",
+    "node.js",
+    "express.js",
+    "letterboxd",
+    "sync"
+  ],
+  "author": "Pigamer37",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pigamer37/letterboxd-stremio-addon/issues"
+  },
+  "homepage": "https://github.com/Pigamer37/letterboxd-stremio-addon#readme",
+  "dependencies": {
+    "express": "^4.21.1",
+    "stremio-addon-sdk": "^1.6.10"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
