@@ -21,7 +21,7 @@ function HandleSubRequest(req, res, next) {
 }
 
 function searchIMDB(imdbID){
-  const headers = {"user-agent": process.env.USER_AGENT}
+  const headers = {"user-agent": process.env.USER_AGENT, "Accept-Language": "en"}
   const options = {"headers": headers, "timeout": 10000}
   const reqURL = (process.env.URL_IMDB_BASE+process.env.URL_PAGE_FILL_ID_IMDB+imdbID+"/")
   console.log(reqURL)
@@ -34,27 +34,28 @@ function searchIMDB(imdbID){
       resp.on('end', ()=>{
         //do things with HTML
         //console.log(rawData)
-        const metaTag = rawData.indexOf('property="og:title"')
-        if(metaTag===-1) return 500;
-        let contentIdx = rawData.indexOf('content', metaTag+18)//search after previous match
-        if(contentIdx===-1) return 500;
-        contentIdx = rawData.indexOf('"', contentIdx+7)//search opening tag of content attr
-        if(contentIdx===-1) return 500;
-        const endContIdx = rawData.indexOf('"', contentIdx+1)
-        if(contentIdx===-1 || contentIdx===endContIdx) return 500;
-        const contentSplit = rawData.substring(contentIdx, endContIdx).split(" | ")
-        const titleAndYearRating = contentSplit[0].split(" (")
-        const yearAndRating = titleAndYearRating[1].split(" ⭐ ")
-        const title = titleAndYearRating[0], year = yearAndRating[0].substring(0,4), rating = yearAndRating[1];
-        console.log(title, year, rating)
-        return {"title": title, "year": year, "rating": rating}
+        let metadata = scrapeIMDBPage(rawData)
       })
     }else return 500;
   }).on('error', (e)=>{return 500})
 }
 
-function scrapeIMDBPage(html){
-
+function scrapeIMDBPage(rawData){
+  const metaTag = rawData.indexOf('property="og:title"')
+  if(metaTag===-1) return 500;
+  let contentIdx = rawData.indexOf('content', metaTag+18)//search after previous match
+  if(contentIdx===-1) return 500;
+  contentIdx = rawData.indexOf('"', contentIdx+7)//search opening tag of content attr
+  if(contentIdx===-1) return 500;
+  const endContIdx = rawData.indexOf('"', contentIdx+1)
+  if(contentIdx===-1 || contentIdx===endContIdx) return 500;
+  console.log(rawData.substring(contentIdx, endContIdx))
+  const contentSplit = rawData.substring(contentIdx, endContIdx).split(" | ")
+  const titleAndYearRating = contentSplit[0].split(" (")
+  const yearAndRating = titleAndYearRating[1].split(" ⭐ ")
+  const title = titleAndYearRating[0], year = yearAndRating[0].substring(0,4), rating = yearAndRating[1];
+  console.log(title, year, rating)
+  return {"title": title, "year": year, "rating": rating}
 }
 
 subtitles.get("/:type/:videoId/*.json", HandleLongSubRequest, HandleSubRequest)
