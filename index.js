@@ -44,7 +44,6 @@ app.get("/manifest.json", (req, res) => {
       ],
       "types": [
         "movie",
-        "series",
         "anime",
         "other"
       ],

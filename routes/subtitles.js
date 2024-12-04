@@ -52,7 +52,7 @@ function HandleSubRequest(req, res, next) {
       res.json({ subtitles: [], message: "Failed getting movie info" });
       next()
     })
-  }else{
+  } else {
     res.json({ subtitles: [] });
     next()
   }
@@ -69,7 +69,7 @@ function SearchParamsRegex(extraParams) {
   if (extraParams !== undefined) {
     const paramMap = new Map()
     const keyVals = extraParams.split('&');
-    for (keyVal of keyVals) {
+    for (let keyVal of keyVals) {
       const keyValArr = keyVal.split('=')
       const param = keyValArr[0]; const val = keyValArr[1];
       paramMap.set(param, val)

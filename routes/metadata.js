@@ -37,7 +37,7 @@ exports.GetTMDBMeta = function (imdbID, lang = undefined) {
  * @param {String} imdbID - IMDB item ID
  * @returns {Object} Parsed and standardised metadata
  */
-function ParseTMDBMeta(resultsArray, imdbID){
+function ParseTMDBMeta(resultsArray, imdbID) {
   const first_item = resultsArray[0]
   return {
     imdbID: imdbID,
@@ -55,7 +55,7 @@ function ParseTMDBMeta(resultsArray, imdbID){
  * @param {String} [type=movie] - optional item type for query
  * @returns {Promise<Object>} array of metadata objects or movie items
  */
-exports.GetCinemetaMeta = function (imdbID, type="movie") {
+exports.GetCinemetaMeta = function (imdbID, type = "movie") {
   const reqURL = `${process.env.CINEMETA_BASE}/meta/${type}/${imdbID}.json`
   return new Promise((resolve, reject) => {
     fetch(reqURL).then((resp) => {
@@ -75,7 +75,7 @@ exports.GetCinemetaMeta = function (imdbID, type="movie") {
  * @param {Object} meta - movie_results array from JSON TMDB response
  * @returns {Object} Parsed and standardised metadata
  */
-function ParseCinemetaMeta(meta){
+function ParseCinemetaMeta(meta) {
   return {
     imdbID: meta.imdb_id,
     tmdbID: meta.moviedb_id,
