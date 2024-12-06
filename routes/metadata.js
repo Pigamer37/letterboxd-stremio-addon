@@ -27,7 +27,7 @@ exports.GetTMDBMeta = function (imdbID, lang = undefined) {
       if ((data === undefined) || (data.movie_results.length < 1)) reject(new Error("Invalid response!"))
       resolve(ParseTMDBMeta(data.movie_results, imdbID))
     }).catch(e => {
-      reject(new Error(e))
+      reject(e)
     })
   })
 }
@@ -56,7 +56,7 @@ function ParseTMDBMeta(resultsArray, imdbID) {
  * @returns {Promise<Object>} array of metadata objects or movie items
  */
 exports.GetCinemetaMeta = function (imdbID, type = "movie") {
-  const reqURL = `${process.env.CINEMETA_BASE}/meta/${type}/${imdbID}.json`
+  const reqURL = `https://v3-cinemeta.strem.io/meta/${type}/${imdbID}.json`
   return new Promise((resolve, reject) => {
     fetch(reqURL).then((resp) => {
       if ((!resp.ok) || resp.status !== 200) reject(new Error(`HTTP error! Status: ${resp.status}`))
@@ -66,7 +66,7 @@ exports.GetCinemetaMeta = function (imdbID, type = "movie") {
       if (data?.meta === undefined) reject(new Error("Invalid response!"))
       resolve(ParseCinemetaMeta(data.meta))
     }).catch(e => {
-      reject(new Error(e))
+      reject(e)
     })
   })
 }

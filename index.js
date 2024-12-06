@@ -2,7 +2,7 @@
 const express = require("express")
 const app = express()
 
-const { addonBuilder, serveHTTP, publishToCentral }  = require('stremio-addon-sdk')
+const { addonBuilder, serveHTTP, publishToCentral } = require('stremio-addon-sdk')
 
 function setCORS(req, res, next) {
   //console.log(req.originalUrl);
@@ -22,14 +22,14 @@ app.get("/manifest.json", (req, res) => {
     for (let i = 0; i < nameVec.length; i++) {
       let word = nameVec[i];
       switch (i) {
-        case (nameVec.length-1):
+        case (nameVec.length - 1):
           humName += word.charAt(0).toUpperCase() + word.slice(1);
-        break;
+          break;
         case 0:
           humName = `${word} `;
-        break;
+          break;
         default:
-          humName += word.charAt(0).toUpperCase() + word.slice(1)+" ";
+          humName += word.charAt(0).toUpperCase() + word.slice(1) + " ";
       }
     }
 
@@ -84,5 +84,37 @@ app.get("/manifest.json", (req, res) => {
 
 const subtitles = require("./routes/subtitles");
 app.use('/subtitles', subtitles);
+/*
+fetch('https://api.strem.io/api/datastoreMeta', { headers: {"Referer": "https://web.stremio.com/", "Content-Type": "text/plain;charset=UTF-8"}, body: {
+    "authKey": "StremioAuthKey",
+    "collection": "libraryItem"
+}, method: "POST"}).then((resp) => {
+      if ((!resp.ok) || resp.status !== 200) console.log(new Error(`HTTP error! Status: ${resp.status}`))
+      if (resp === undefined) console.log(new Error(`undefined response!`))
+      return resp.json()
+    }).then((data) => {
+      if (data === undefined) console.log(new Error("Invalid response!"))
+      console.log(data)
+    }).catch(e => {
+      console.log(e)
+    })
 
+    Responds with (example):
+    {
+    "result": [
+        [
+            "kono-koi-ni-kizuite-1",
+            1731587229876
+        ],
+        [
+            "tt0111161",
+            1727700167081
+        ],
+        [
+            "tt0480489",
+            1732797458101
+        ]
+    ]
+}
+*/
 app.listen(3000);

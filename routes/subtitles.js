@@ -33,34 +33,30 @@ function HandleLongSubRequest(req, res, next) {
  */
 function HandleSubRequest(req, res, next) {
   console.log(`\x1b[96mEntered HandleSubRequest with\x1b[39m ${req.originalUrl}`)
-  if (req.params.type === "movie") {
-    console.log('\x1b[33mGot a movie\x1b[39m')
-    const videoID = req.params.videoId
-    MetadataHandler.GetTMDBMeta(videoID).then((TMDBmeta) => {
-      console.log('\x1b[36mGot TMDB metadata:\x1b[39m ', TMDBmeta)
-      res.json({ subtitles: [{ id: 1, url: "about:blank", lang: "LB-TMDBOK" }], message: "Got TMDB metadata" });
-      next()
-    }, (reason) => {
-      console.log("\x1b[31mDidn't get TMDB metadata because:\x1b[39m " + reason + ", trying Cinemeta...")
-      MetadataHandler.GetCinemetaMeta(videoID).then((Cinemeta) => {
-        console.log('\x1b[36mGot Cinemeta metadata:\x1b[39m ', Cinemeta)
-        res.json({ subtitles: [{ id: 1, url: "about:blank", lang: "LB-CineMOK" }], message: "Got Cinemeta metadata" });
-        next()
-      })
-    }).catch((err) => {
-      console.log('\x1b[31mFailed:\x1b[39m' + err)
-      res.json({ subtitles: [], message: "Failed getting movie info" });
+  console.log('\x1b[33mGot a movie\x1b[39m')
+  const videoID = req.params.videoId
+  MetadataHandler.GetTMDBMeta(videoID).then((TMDBmeta) => {
+    console.log('\x1b[36mGot TMDB metadata:\x1b[39m ', TMDBmeta)
+    res.json({ subtitles: [{ id: 1, url: "about:blank", lang: "LB-TMDBOK" }], message: "Got TMDB metadata" });
+    next()
+  }, (reason) => {
+    console.log("\x1b[31mDidn't get TMDB metadata because:\x1b[39m " + reason + ", trying Cinemeta...")
+    return MetadataHandler.GetCinemetaMeta(videoID).then((Cinemeta) => {
+      console.log('\x1b[36mGot Cinemeta metadata:\x1b[39m ', Cinemeta)
+      res.json({ subtitles: [{ id: 1, url: "about:blank", lang: "LB-CineMOK" }], message: "Got Cinemeta metadata" });
       next()
     })
-  } else {
-    res.json({ subtitles: [] });
+  }).catch((err) => {
+    console.log('\x1b[31mFailed:\x1b[39m' + err)
+    res.json({ subtitles: [], message: "Failed getting movie info" });
     next()
-  }
+  })
 }
 
 subtitles.get("/:type/:videoId/*.json", HandleLongSubRequest, HandleSubRequest)
 subtitles.get("/:type/:videoId.json", HandleSubRequest)
-/** Parses the capture group corresponding to URL parameters that stremio might send with its request. Tipical extra info is a dot separated title, the video hash or even file size
+/** 
+ * Parses the capture group corresponding to URL parameters that stremio might send with its request. Tipical extra info is a dot separated title, the video hash or even file size
  * @param {string} extraParams - The string captured by express in req.params[0] in route {@link subtitles.get("/:type/:videoId/*.json", HandleLongSubRequest, HandleSubRequest)}
  * @return {Object} Empty if we passed undefined, populated with key/value pairs corresponding to parameters otherwise
  */
