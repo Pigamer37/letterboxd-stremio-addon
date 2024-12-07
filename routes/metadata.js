@@ -7,6 +7,9 @@ require('dotenv').config()
 GetTMDBAuthToken = function () {
   return { "Authorization": `Bearer ${process.env.TMDB_API_READ_TOKEN}` }
 }
+const TMDB_API_BASE = "https://api.themoviedb.org/3"
+const CINEMETA_BASE = "https://v3-cinemeta.strem.io"
+
 /**
  * Requests metadata from TMDB
  * @param {String} imdbID - IMDB item ID like "tt29623480"
@@ -15,8 +18,8 @@ GetTMDBAuthToken = function () {
  */
 exports.GetTMDBMeta = function (imdbID, lang = undefined) {
   const reqURL = (lang === undefined) ?
-    `${process.env.TMDB_API_BASE}/find/${imdbID}?external_source=imdb_id` :
-    `${process.env.TMDB_API_BASE}/find/${imdbID}?external_source=imdb_id&language=${lang}`;
+    `${TMDB_API_BASE}/find/${imdbID}?external_source=imdb_id` :
+    `${TMDB_API_BASE}/find/${imdbID}?external_source=imdb_id&language=${lang}`;
   const options = { headers: GetTMDBAuthToken() }
   return new Promise((resolve, reject) => {
     fetch(reqURL, options).then((resp) => {
@@ -56,7 +59,7 @@ function ParseTMDBMeta(resultsArray, imdbID) {
  * @returns {Promise<Object>} array of metadata objects or movie items
  */
 exports.GetCinemetaMeta = function (imdbID, type = "movie") {
-  const reqURL = `https://v3-cinemeta.strem.io/meta/${type}/${imdbID}.json`
+  const reqURL = `${CINEMETA_BASE}/meta/${type}/${imdbID}.json`
   return new Promise((resolve, reject) => {
     fetch(reqURL).then((resp) => {
       if ((!resp.ok) || resp.status !== 200) reject(new Error(`HTTP error! Status: ${resp.status}`))
