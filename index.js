@@ -12,6 +12,9 @@ function setCORS(req, res, next) {
 }
 app.use(setCORS);
 
+app.use(express.static('public'))
+app.set('view engine', 'ejs');
+
 const fsPromises = require("fs/promises")
 function ReadManifest() {
   return fsPromises.readFile('./package.json', 'utf8').then((data) => {
@@ -61,6 +64,36 @@ app.get("/:config/manifest.json", (req, res) => {
   ReadManifest().then((manif) => {
     //console.log("Params:", decodeURIComponent(req.params[0]))
     res.json(manif);
+  }).catch((err) => {
+    res.status(500).statusMessage("Error reading file: " + err);
+  })
+})
+
+app.get("/configure", (req, res) => {
+  ReadManifest().then((manif) => {
+    let base_url = req.hostname;
+    if (req.hostname === "127.0.0.1") base_url += ":3000";
+    res.render('config', {
+      logged_in: false,
+      base_url: base_url,
+      manifest: manif
+    })
+  }).catch((err) => {
+    res.status(500).statusMessage("Error reading file: " + err);
+  })
+})
+//WIP
+app.get("/:config/configure", (req, res) => {
+  ReadManifest().then((manif) => {
+    let base_url = req.hostname;
+    if (req.hostname === "127.0.0.1") base_url += ":3000";
+    res.render('config', {
+      logged_in: true,
+      config: req.params.config,
+      user: req.params.config,
+      base_url: base_url,
+      manifest: manif
+    })
   }).catch((err) => {
     res.status(500).statusMessage("Error reading file: " + err);
   })
