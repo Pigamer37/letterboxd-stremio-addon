@@ -8,6 +8,7 @@ require('dotenv').config()
 GetLetterboxdAuthToken = function () {
   return { "Authorization": `Bearer ${process.env.LETTERBOXD_API_TOKEN}` }
 }
+const LETTERBOXD_API_BASE = "https://api.letterboxd.com/api/v0"
 /**
  * Gets LID from a TMDB ID
  * @see GetTMDBMeta for more details on this
@@ -15,7 +16,7 @@ GetLetterboxdAuthToken = function () {
  * @returns {string} LID of the item
  */
 function GetLID_FromTMDB_ID(tmdbID) {
-  const reqURL = `${process.env.LETTERBOXD_API_BASE}/film/tmdb:${tmdbID}`
+  const reqURL = `${LETTERBOXD_API_BASE}/film/tmdb:${tmdbID}`
   const options = { headers: GetLetterboxdAuthToken() }
   return new Promise((resolve, reject) => {
     fetch(reqURL, options).then((resp) => {
@@ -45,7 +46,7 @@ function GetLID_FromTMDB_ID(tmdbID) {
 exports.GetFilmRelationship = function (tmdbID) {
   //we may need to invoke GetLID_FromTMDB_ID before to "translate" from TMDB ID to LID
   //this endpoint may not work with a tmdb: tag
-  const reqURL = `${process.env.LETTERBOXD_API_BASE}/film/tmdb:${tmdbID}/me`
+  const reqURL = `${LETTERBOXD_API_BASE}/film/tmdb:${tmdbID}/me`
   const options = { headers: GetLetterboxdAuthToken() }
   return new Promise((resolve, reject) => {
     fetch(reqURL, options).then((resp) => {
@@ -63,7 +64,7 @@ exports.GetFilmRelationship = function (tmdbID) {
 exports.UpdateFilmRelationship = function (tmdbID) {
   //we may need to invoke GetLID_FromTMDB_ID before to "translate" from TMDB ID to LID
   //this endpoint may not work with a tmdb: tag
-  const reqURL = `${process.env.LETTERBOXD_API_BASE}/film/tmdb:${tmdbID}/me`
+  const reqURL = `${LETTERBOXD_API_BASE}/film/tmdb:${tmdbID}/me`
   const options = { headers: GetLetterboxdAuthToken(), method: "PATCH", body: '{"watched":"true"}' }
   return new Promise((resolve, reject) => {
     fetch(reqURL, options).then((resp) => {

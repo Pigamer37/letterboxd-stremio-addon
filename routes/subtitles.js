@@ -35,13 +35,13 @@ function HandleSubRequest(req, res, next) {
   console.log('\x1b[33mGot a movie\x1b[39m')
   const videoID = req.params.videoId
   Metadata.GetTMDBMeta(videoID).then((TMDBmeta) => {
-    console.log('\x1b[36mGot TMDB metadata:\x1b[39m ', TMDBmeta.shortPrint())
+    console.log('\x1b[36mGot TMDB metadata:\x1b[39m', TMDBmeta.shortPrint())
     res.json({ subtitles: [{ id: 1, url: "about:blank", lang: "LB-TMDBOK" }], message: "Got TMDB metadata" });
     next()
   }, (reason) => {
     console.log("\x1b[31mDidn't get TMDB metadata because:\x1b[39m " + reason + ", trying Cinemeta...")
     return Metadata.GetCinemetaMeta(videoID).then((Cinemeta) => {
-      console.log('\x1b[36mGot Cinemeta metadata:\x1b[39m ', Cinemeta.shortPrint())
+      console.log('\x1b[36mGot Cinemeta metadata:\x1b[39m', Cinemeta.shortPrint())
       res.json({ subtitles: [{ id: 1, url: "about:blank", lang: "LB-CineMOK" }], message: "Got Cinemeta metadata" });
       next()
     })

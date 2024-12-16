@@ -32,7 +32,7 @@ class Metadata {
   }
   fullPrint() {
     return `${this.title}, a` + (adult !== undefined) ? "n adult" : "" +
-    ` ${this.type} released ${this.releaseDate.toDateString()}.\n
+      ` ${this.type} released ${this.releaseDate.toDateString()}.\n
     Overview: ${this.summary}`;
   }
   imdbID;
