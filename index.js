@@ -5,7 +5,6 @@ const app = express()
 const { addonBuilder, serveHTTP, publishToCentral } = require('stremio-addon-sdk')
 
 function setCORS(req, res, next) {
-  //console.log(req.originalUrl);
   res.header(`Access-Control-Allow-Origin`, `*`);
   res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE`);
   res.header(`Access-Control-Allow-Headers`, `Content-Type`);
@@ -14,29 +13,22 @@ function setCORS(req, res, next) {
 app.use(setCORS);
 
 const fsPromises = require("fs/promises")
-app.get("/manifest.json", (req, res) => {
-  fsPromises.readFile('./package.json', 'utf8').then((data) => {
+function ReadManifest() {
+  return fsPromises.readFile('./package.json', 'utf8').then((data) => {
     const packageJSON = JSON.parse(data);
     const nameVec = packageJSON.name.split('-');
-    let humName;
+    let humName = "";
     for (let i = 0; i < nameVec.length; i++) {
       let word = nameVec[i];
-      switch (i) {
-        case (nameVec.length - 1):
-          humName += word.charAt(0).toUpperCase() + word.slice(1);
-          break;
-        case 0:
-          humName = `${word} `;
-          break;
-        default:
-          humName += word.charAt(0).toUpperCase() + word.slice(1) + " ";
-      }
+      humName += word.charAt(0).toUpperCase() + word.slice(1);
+      if (i !== nameVec.length - 1) humName += " ";
     }
 
-    manifest = {
+    let manifest = {
       "id": 'com.' + packageJSON.name.replaceAll('-', '.'),
       "version": packageJSON.version,
       "name": humName,
+      "logo": "https://www.stremio.com/website/stremio-logo-small.png",
       "description": packageJSON.description,
       "catalogs": [],
       "resources": [
@@ -50,40 +42,32 @@ app.get("/manifest.json", (req, res) => {
       "idPrefixes": [
         "tt"
       ],
-      "logo": "https://www.stremio.com/website/stremio-logo-small.png"
+      "behaviorHints": { "configurable": true }
     }
-    res.json(manifest);
-  })/*.then(()=>{
-    const builder = new addonBuilder({
-      id: manifest.id,
-      version: manifest.version,
-      name: manifest.name,
-      catalogs: [],
-      resources: manifest.resources,
-      types: manifest.types,
-      idPrefixes: manifest.idPrefixes
-    })
+    return manifest;
+  })
+}
 
-    builder.defineSubtitlesHandler(function(args) {
-      /*if (args.id === 'tt1254207') {
-          // serve one subtitle
-          const subtitle = {
-              url: 'https://mkvtoolnix.download/samples/vsshort-en.srt',
-              lang: 'eng'
-          }
-          return Promise.resolve({ subtitles: [subtitle] })
-      } else {
-          // otherwise return no subtitles
-          return Promise.resolve({ subtitles: [] })
-      }*/
-      /*console.log(`sub request at supposed: ${args.type}/${args.id}/${args?.extra?.videoHash}.json`)
-      return Promise.resolve({ subtitles: [] })
-    })
-  })*/.catch((err) => res.status(500).statusMessage("Error reading file"));
+app.get("/manifest.json", (req, res) => {
+  ReadManifest().then((manif) => {
+    manif.behaviorHints.configurationRequired = true
+    res.json(manif);
+  }).catch((err) => {
+    res.status(500).statusMessage("Error reading file: " + err);
+  })
+})
+
+app.get("/:config/manifest.json", (req, res) => {
+  ReadManifest().then((manif) => {
+    //console.log("Params:", decodeURIComponent(req.params[0]))
+    res.json(manif);
+  }).catch((err) => {
+    res.status(500).statusMessage("Error reading file: " + err);
+  })
 })
 
 const subtitles = require("./routes/subtitles");
-app.use('/subtitles', subtitles);
+app.use(subtitles);
 /*
 fetch('https://api.strem.io/api/datastoreMeta', { headers: {"Referer": "https://web.stremio.com/", "Content-Type": "text/plain;charset=UTF-8"}, body: {
     "authKey": "StremioAuthKey",
@@ -98,7 +82,7 @@ fetch('https://api.strem.io/api/datastoreMeta', { headers: {"Referer": "https://
     }).catch(e => {
       console.log(e)
     })
-
+ 
     Responds with (example):
     {
     "result": [
