@@ -57,7 +57,7 @@ exports.GetFilmRelationship = function (tmdbID) {
       if (data === undefined) reject(new Error("Invalid response!"))
       resolve(data)
     }).catch(e => {
-      reject(new Error(e))
+      reject(e)
     })
   })
 }
@@ -76,7 +76,23 @@ exports.UpdateFilmRelationship = function (tmdbID) {
       if (updateResp.messages[0] !== "Success") reject(new Error(updateResp.messages[0].title))
       resolve(updateResp)
     }).catch(e => {
-      reject(new Error(e))
+      reject(e)
+    })
+  })
+}
+//use the third party letterboxd list Stremio addon to get a catalog of the user's watchlist
+exports.GetUserWatchlist = function (user) {
+  const reqURL = 'https://letterboxd.almosteffective.com/' + encodeURIComponent(`/${user}/watchlist`) + '/catalog/movie/1'
+  return new Promise((resolve, reject) => {
+    fetch(reqURL).then((resp) => {
+      if ((!resp.ok) || resp.status !== 200) reject(new Error(`HTTP error! Status: ${resp.status}`))
+      if (resp === undefined) reject(new Error(`undefined response!`))
+      return resp.json()
+    }).then((catalog) => {
+      if (catalog?.count === undefined) reject(new Error("Invalid response!"))
+      resolve(catalog)
+    }).catch(e => {
+      reject(e)
     })
   })
 }

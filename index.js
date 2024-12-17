@@ -99,6 +99,15 @@ app.get("/:config/configure", (req, res) => {
   })
 })
 
+const Letterboxd = require('./routes/letterboxd.js');
+app.get("/:config/catalog/:type/:id", (req, res) => {
+  Letterboxd.GetUserWatchlist(req.params.config).then(catalog=>{
+    res.json(catalog)
+  }).catch(err=>{
+    res.status(500).statusMessage("Error using stremio-letterboxd addon: " + err);
+  })
+})
+
 const subtitles = require("./routes/subtitles");
 app.use(subtitles);
 /*
