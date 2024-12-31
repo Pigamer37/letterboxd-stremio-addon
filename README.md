@@ -1,5 +1,8 @@
 # letterboxd-stremio-addon
- Node.js & Express based addon trying to sync watched movies on Stremio with Letterboxd activity. (I'm new to backend so I'm using it as a learning experience)
+ Node.js & Express based addon trying to sync watched movies on Stremio with Letterboxd activity. (I'm new to backend so I'm using it as a learning experience).
+
+> [!WARNING]
+> The Letterboxd API is not yet available for personal projects, and thus I can't get access to it yet. I'm brainstorming ways to achieve the same results without the API but they seem insecure or kind of hacky.
 
 ## Normal program flow:
 Whenever you start watching something on Stremio that matches some parameters set in the manifest (generated on `index.js`), the platform will call this addon. When the program can get the data for the item you are watching, it will let you know by having a language entry in the subtitles that looks something like `LB-[source of data, either TMDB or the Cinemeta addon]OK`. When it can't get the data, the entry wont be available.
